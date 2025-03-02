@@ -1,7 +1,10 @@
-# SpatialVision-Gemini-Bench
 
 <div align="center">
-  <img src="assets/header.svg" alt="Spatial Vision Gemini" width="800">
+
+![Image](https://github.com/user-attachments/assets/6131c946-bb7e-421e-90d2-adcc876f39ae)
+
+# SpatialVision-Gemini-Bench
+
 </div>
 
 ## 🌟 概要
