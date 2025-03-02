@@ -108,26 +108,39 @@ def ensure_images_directory():
     """
     サンプル画像ディレクトリの確認と作成
     存在しない場合は作成しサンプル画像をダウンロード
+    
+    Returns:
+        str: 画像ディレクトリの絶対パス
     """
+    # 画像ディレクトリのパス
+    image_dir = os.path.join(os.getcwd(), "images")
+    
     # 親ディレクトリの確認
-    if not os.path.exists("images"):
-        os.makedirs("images")
-        os.makedirs("images/food")
-        os.makedirs("images/nature")
-        os.makedirs("images/urban")
+    if not os.path.exists(image_dir):
+        os.makedirs(image_dir)
+        os.makedirs(os.path.join(image_dir, "food"))
+        os.makedirs(os.path.join(image_dir, "nature"))
+        os.makedirs(os.path.join(image_dir, "urban"))
         # サンプル画像のダウンロード
         for cmd in download_sample_images():
             os.system(cmd)
     
     # サブディレクトリの確認
     for category in ["food", "nature", "urban"]:
-        if not os.path.exists(f"images/{category}"):
-            os.makedirs(f"images/{category}")
+        category_dir = os.path.join(image_dir, category)
+        if not os.path.exists(category_dir):
+            os.makedirs(category_dir)
     
     # ディレクトリが空の場合もダウンロード
-    if not os.listdir("images/food") and not os.listdir("images/nature") and not os.listdir("images/urban"):
+    food_dir = os.path.join(image_dir, "food")
+    nature_dir = os.path.join(image_dir, "nature")
+    urban_dir = os.path.join(image_dir, "urban")
+    
+    if not os.listdir(food_dir) and not os.listdir(nature_dir) and not os.listdir(urban_dir):
         for cmd in download_sample_images():
             os.system(cmd)
+    
+    return image_dir
 
 def get_default_prompt(image_path):
     """
