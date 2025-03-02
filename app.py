@@ -73,20 +73,18 @@ def main():
                     # 画像をリサイズ
                     img_resized = resize_image(image)
                     
-                    try:
-                        # オブジェクト検出
-                        response = detect_objects(
-                            client, 
-                            model_option, 
-                            prompt, 
-                            img_resized, 
-                            temperature
-                        )
-                        
-                        # 結果の表示
-                        show_detection_results(response, img_resized)
-                    except Exception as e:
-                        st.error(f"API呼び出し中にエラーが発生しました: {e}")
+                    # オブジェクト検出
+                    response = detect_objects(
+                        client, 
+                        model_option, 
+                        prompt, 
+                        img_resized, 
+                        temperature
+                    )
+                    
+                    # 結果の表示
+                    show_detection_results(response, img_resized)
+
                     
 
     

@@ -8,7 +8,7 @@ import json
 from PIL import Image
 import os
 
-from config import MODEL_OPTIONS, DEFAULT_MODEL, DEFAULT_TEMPERATURE
+from config import MODEL_OPTIONS, DEFAULT_MODEL, DEFAULT_TEMPERATURE, get_api_key
 from data import SAMPLE_IMAGE_OPTIONS, SAMPLE_PROMPTS, get_default_prompt, IMAGE_CATEGORIES
 from utils import parse_json, plot_bounding_boxes
 
@@ -37,11 +37,17 @@ def show_sidebar():
     with st.sidebar:
         st.title("🔍 オブジェクト検出設定")
         
+        # 環境変数からAPIキーを取得
+        env_api_key = get_api_key()
+        placeholder = "（環境変数から読み込み済み）" if env_api_key else "APIキーを入力してください"
+        
         # API Keyの入力
         api_key = st.text_input(
-            "Google API Keyを入力してください", 
+            "Google API Key", 
+            value=env_api_key if env_api_key else "",
+            placeholder=placeholder,
             type="password", 
-            help="Google AI StudioからAPI Keyを取得できます。"
+            help="Google AI StudioからAPI Keyを取得できます。.envファイルに設定することも可能です。"
         )
         
         st.markdown("---")
