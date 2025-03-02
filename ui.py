@@ -18,14 +18,16 @@ def show_header():
     """
     st.markdown(
         """
-        <div style="text-align:center">
-            <img src="assets/header.svg" alt="Spatial Vision Gemini" width="700">
-        </div>
+<div align="center">
+
+# SpatialVision-Gemini-Bench
+
+</div>
+
         """,
         unsafe_allow_html=True
     )
     
-    st.title("オブジェクト検出と空間理解")
 
 def show_sidebar():
     """
@@ -35,7 +37,18 @@ def show_sidebar():
         dict: サイドバーの設定値
     """
     with st.sidebar:
-        st.title("🔍 オブジェクト検出設定")
+
+        st.markdown(
+            """
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/6131c946-bb7e-421e-90d2-adcc876f39ae" width="100%" alt="Image">
+</div>
+
+            """,
+            unsafe_allow_html=True
+        )
+    
+        st.title("🔍 検出設定")
         
         # 環境変数からAPIキーを取得
         env_api_key = get_api_key()
