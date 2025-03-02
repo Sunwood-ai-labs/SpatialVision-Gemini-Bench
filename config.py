@@ -25,6 +25,14 @@ MODEL_OPTIONS = [
     "gemini-1.5-flash-latest"
 ]
 
+# モデル表示名（日本語説明付き）
+MODEL_DISPLAY_NAMES = {
+    "gemini-2.0-flash": "Gemini 2.0 Flash (高速・高精度)",
+    "gemini-2.0-flash-lite": "Gemini 2.0 Flash Lite (軽量版)", 
+    "gemini-2.0-pro-exp-02-05": "Gemini 2.0 Pro (高性能)", 
+    "gemini-1.5-flash-latest": "Gemini 1.5 Flash (最新版)"
+}
+
 # デフォルト設定
 DEFAULT_MODEL = "gemini-2.0-flash"
 DEFAULT_TEMPERATURE = 0.5

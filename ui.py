@@ -8,7 +8,7 @@ import json
 from PIL import Image
 import os
 
-from config import MODEL_OPTIONS, DEFAULT_MODEL, DEFAULT_TEMPERATURE, get_api_key
+from config import MODEL_OPTIONS, MODEL_DISPLAY_NAMES, DEFAULT_MODEL, DEFAULT_TEMPERATURE, get_api_key
 from data import SAMPLE_IMAGE_OPTIONS, SAMPLE_PROMPTS, get_default_prompt, IMAGE_CATEGORIES
 from utils import parse_json, plot_bounding_boxes
 
@@ -52,14 +52,26 @@ def show_sidebar():
         
         st.markdown("---")
         
-        # モデル選択
+        # モデル選択（複数選択に変更）
         st.subheader("モデル選択")
-        model_option = st.selectbox(
-            "使用するモデルを選択",
-            MODEL_OPTIONS,
-            index=MODEL_OPTIONS.index(DEFAULT_MODEL) if DEFAULT_MODEL in MODEL_OPTIONS else 0,
-            help="Geminiモデルを選択します。パフォーマンスはgemini-2.0-flashが最も高いです。"
-        )
+        selected_models = []
+        
+        st.markdown("使用するモデルを選択してください（複数選択可）")
+        
+        for model in MODEL_OPTIONS:
+            is_default = model == DEFAULT_MODEL
+            selected = st.checkbox(
+                MODEL_DISPLAY_NAMES.get(model, model),
+                value=is_default,
+                help=f"モデル: {model}"
+            )
+            if selected:
+                selected_models.append(model)
+        
+        # 少なくとも1つのモデルが選択されているか確認
+        if not selected_models:
+            st.warning("少なくとも1つのモデルを選択してください")
+            selected_models = [DEFAULT_MODEL]
         
         st.markdown("---")
         
@@ -87,7 +99,7 @@ def show_sidebar():
     
     return {
         "api_key": api_key,
-        "model_option": model_option,
+        "selected_models": selected_models,
         "custom_prompt": custom_prompt,
         "temperature": temperature,
         "img_source": img_source
@@ -158,41 +170,50 @@ def show_image_uploader():
     
     return image
 
-def show_detection_results(response, img_resized):
+def show_detection_results(response_dict, img_resized):
     """
     検出結果を表示
     
     Args:
-        response: Gemini APIからのレスポンス
+        response_dict: モデル名をキーとしたレスポンス辞書
         img_resized: 検出に使用した画像
     """
-    if response.text:
-        st.subheader("APIレスポンス")
-        st.code(response.text, language="json")
-        
-        # バウンディングボックスの描画
-        try:
-            result_image = plot_bounding_boxes(img_resized, response.text)
-            st.subheader("検出結果")
-            st.image(result_image, caption="検出結果", use_column_width=True)
-            
-            # 検出されたオブジェクトの数を表示
-            try:
-                json_text = parse_json(response.text)
-                bounding_boxes = json.loads(json_text)
-                st.success(f"{len(bounding_boxes)}個のオブジェクトが検出されました")
-                
-                # 検出されたラベル一覧
-                labels = [box.get("label", "不明") for box in bounding_boxes]
-                st.subheader("検出されたオブジェクト")
-                for i, label in enumerate(labels, 1):
-                    st.write(f"{i}. {label}")
-            except Exception as e:
-                st.warning(f"検出オブジェクトのカウントに失敗しました: {e}")
-        except Exception as e:
-            st.error(f"バウンディングボックスの描画に失敗しました: {e}")
-    else:
+    if not response_dict:
         st.error("APIからの応答がありませんでした")
+        return
+    
+    # タブで各モデルの結果を表示
+    tabs = st.tabs([MODEL_DISPLAY_NAMES.get(model, model) for model in response_dict.keys()])
+    
+    for i, (model, response) in enumerate(response_dict.items()):
+        with tabs[i]:
+            if response and response.text:
+                st.subheader("APIレスポンス")
+                st.code(response.text, language="json")
+                
+                # バウンディングボックスの描画
+                try:
+                    result_image = plot_bounding_boxes(img_resized, response.text)
+                    st.subheader("検出結果")
+                    st.image(result_image, caption=f"{MODEL_DISPLAY_NAMES.get(model, model)}による検出結果", use_column_width=True)
+                    
+                    # 検出されたオブジェクトの数を表示
+                    try:
+                        json_text = parse_json(response.text)
+                        bounding_boxes = json.loads(json_text)
+                        st.success(f"{len(bounding_boxes)}個のオブジェクトが検出されました")
+                        
+                        # 検出されたラベル一覧
+                        labels = [box.get("label", "不明") for box in bounding_boxes]
+                        st.subheader("検出されたオブジェクト")
+                        for i, label in enumerate(labels, 1):
+                            st.write(f"{i}. {label}")
+                    except Exception as e:
+                        st.warning(f"検出オブジェクトのカウントに失敗しました: {e}")
+                except Exception as e:
+                    st.error(f"バウンディングボックスの描画に失敗しました: {e}")
+            else:
+                st.error(f"{MODEL_DISPLAY_NAMES.get(model, model)}からの応答がありませんでした")
 
 def show_footer():
     """
@@ -202,7 +223,7 @@ def show_footer():
     st.markdown("""
     ### 使い方
     1. サイドバーでGemini API Keyを入力
-    2. 使用するモデルを選択
+    2. 使用するモデルを選択（複数選択可）
     3. サンプル画像のカテゴリと画像を選択
     4. プロンプトをカスタマイズ（任意）
     5. 「オブジェクト検出を実行」ボタンをクリック
@@ -211,4 +232,5 @@ def show_footer():
     - このアプリはGemini APIを使用しています。有効なAPIキーが必要です。
     - 画像サイズが大きい場合は自動的にリサイズされます。
     - 検出結果はモデルによって異なる場合があります。
+    - 複数モデルでの比較が可能です。
     """)
