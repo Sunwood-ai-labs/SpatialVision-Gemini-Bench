@@ -8,6 +8,8 @@ from google.genai import Client
 from google.genai import types
 import streamlit as st
 from io import BytesIO
+import asyncio
+import time
 
 from config import get_system_instruction, get_safety_settings, MAX_IMAGE_SIZE
 
@@ -84,3 +86,50 @@ def detect_objects(client, model_name, prompt, image, temperature=0.5):
     )
     
     return response
+
+def detect_objects_with_multiple_models(client, model_names, prompt, image, temperature=0.5):
+    """
+    複数のモデルを使用して画像内のオブジェクトを検出
+    
+    Args:
+        client: Gemini APIクライアント
+        model_names: 使用するモデル名のリスト
+        prompt: プロンプトテキスト
+        image: PILのImageオブジェクトまたはバイト配列
+        temperature: 生成の多様性制御パラメータ
+        
+    Returns:
+        dict: モデル名をキーとしたAPIレスポンスの辞書
+    """
+    results = {}
+    errors = []
+    progress_text = st.empty()
+    progress_bar = st.progress(0)
+    total_models = len(model_names)
+    
+    for i, model_name in enumerate(model_names):
+        progress = (i / total_models)
+        progress_bar.progress(progress)
+        progress_text.text(f"モデル {i+1}/{total_models}: {model_name} で検出中...")
+        
+        try:
+            response = detect_objects(client, model_name, prompt, image, temperature)
+            results[model_name] = response
+        except Exception as e:
+            error_msg = f"{model_name}での検出に失敗しました: {str(e)}"
+            st.error(error_msg)
+            errors.append(error_msg)
+            results[model_name] = None
+        
+        # APIレート制限に配慮して少し待機
+        if i < total_models - 1:
+            time.sleep(1)
+    
+    progress_bar.progress(1.0)
+    progress_text.text("すべてのモデルでの検出が完了しました")
+    
+    # エラーの要約を表示
+    if errors:
+        st.warning(f"{len(errors)}個のモデルでエラーが発生しました。詳細はログを確認してください。")
+    
+    return results
