@@ -104,23 +104,31 @@ def plot_bounding_boxes(img, bounding_boxes_text, font_path=None):
 
 def download_sample_images():
     """サンプル画像をダウンロードするコマンドのリストを返す"""
-    image_urls = [
-        "https://storage.googleapis.com/generativeai-downloads/images/socks.jpg",
-        "https://storage.googleapis.com/generativeai-downloads/images/vegetables.jpg",
-        "https://storage.googleapis.com/generativeai-downloads/images/Japanese_Bento.png",
-        "https://storage.googleapis.com/generativeai-downloads/images/Cupcakes.jpg",
-        "https://storage.googleapis.com/generativeai-downloads/images/origamis.jpg",
-        "https://storage.googleapis.com/generativeai-downloads/images/fruits.jpg",
-        "https://storage.googleapis.com/generativeai-downloads/images/cat.jpg",
-        "https://storage.googleapis.com/generativeai-downloads/images/pumpkins.jpg",
-        "https://storage.googleapis.com/generativeai-downloads/images/breakfast.jpg",
-        "https://storage.googleapis.com/generativeai-downloads/images/bookshelf.jpg",
-        "https://storage.googleapis.com/generativeai-downloads/images/spill.jpg"
-    ]
+    image_urls = {
+        "food": [
+            "https://storage.googleapis.com/generativeai-downloads/images/vegetables.jpg",
+            "https://storage.googleapis.com/generativeai-downloads/images/Japanese_Bento.png",
+            "https://storage.googleapis.com/generativeai-downloads/images/Cupcakes.jpg",
+            "https://storage.googleapis.com/generativeai-downloads/images/fruits.jpg",
+            "https://storage.googleapis.com/generativeai-downloads/images/breakfast.jpg"
+        ],
+        "nature": [
+            "https://storage.googleapis.com/generativeai-downloads/images/cat.jpg",
+            "https://storage.googleapis.com/generativeai-downloads/images/pumpkins.jpg"
+        ],
+        "urban": [
+            "https://storage.googleapis.com/generativeai-downloads/images/bookshelf.jpg",
+            "https://storage.googleapis.com/generativeai-downloads/images/origamis.jpg",
+            "https://storage.googleapis.com/generativeai-downloads/images/socks.jpg",
+            "https://storage.googleapis.com/generativeai-downloads/images/spill.jpg"
+        ]
+    }
     
     download_commands = []
-    for url in image_urls:
-        filename = url.split("/")[-1]
-        download_commands.append(f"wget {url} -O images/{filename} -q")
+    
+    for category, urls in image_urls.items():
+        for url in urls:
+            filename = url.split("/")[-1]
+            download_commands.append(f"wget {url} -O images/{category}/{filename} -q")
     
     return download_commands

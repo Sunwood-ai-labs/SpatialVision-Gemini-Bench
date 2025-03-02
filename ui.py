@@ -9,7 +9,7 @@ from PIL import Image
 import os
 
 from config import MODEL_OPTIONS, DEFAULT_MODEL, DEFAULT_TEMPERATURE
-from data import SAMPLE_IMAGE_OPTIONS, SAMPLE_PROMPTS, get_default_prompt
+from data import SAMPLE_IMAGE_OPTIONS, SAMPLE_PROMPTS, get_default_prompt, IMAGE_CATEGORIES
 from utils import parse_json, plot_bounding_boxes
 
 def show_header():
@@ -94,11 +94,21 @@ def show_sample_image_selector():
     Returns:
         tuple: (選択された画像のパス, 選択されたプロンプト)
     """
+    # カテゴリ選択
+    selected_category = st.selectbox(
+        "カテゴリを選択してください",
+        list(IMAGE_CATEGORIES.keys()),
+        format_func=lambda x: f"{IMAGE_CATEGORIES[x]}"
+    )
+    
+    # カテゴリ内の画像をフィルタリング
+    category_images = {k: v for k, v in SAMPLE_IMAGE_OPTIONS.items() if k.startswith(selected_category)}
+    
     # サンプル画像選択
     selected_sample = st.selectbox(
         "サンプル画像を選択してください",
-        list(SAMPLE_IMAGE_OPTIONS.keys()),
-        format_func=lambda x: f"{x} ({SAMPLE_IMAGE_OPTIONS[x]})"
+        list(category_images.keys()),
+        format_func=lambda x: f"{os.path.basename(x)} ({category_images[x]})"
     )
     
     # サンプル画像に対応するプロンプト選択
@@ -187,7 +197,7 @@ def show_footer():
     ### 使い方
     1. サイドバーでGemini API Keyを入力
     2. 使用するモデルを選択
-    3. サンプル画像かアップロードした画像を選択
+    3. サンプル画像のカテゴリと画像を選択
     4. プロンプトをカスタマイズ（任意）
     5. 「オブジェクト検出を実行」ボタンをクリック
 
