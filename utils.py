@@ -3,18 +3,30 @@ import io
 from PIL import Image, ImageDraw, ImageFont
 from PIL import ImageColor
 import numpy as np
+import random
 
 # カラーマップを設定
 def get_color_list():
     """バウンディングボックス描画用のカラーリストを取得する"""
+    # プロジェクト用カスタムカラーマップ
+    custom_colors = [
+        '#7D4EBF',  # 紫
+        '#52378C',  # 濃い紫
+        '#352559',  # 暗い紫
+        '#0F5C8C',  # 青
+        '#092B40',  # 暗い青
+    ]
+    
+    # 基本色（バックアップとして保持）
     basic_colors = [
         'red', 'green', 'blue', 'yellow', 'orange', 'pink', 'purple',
         'brown', 'gray', 'beige', 'turquoise', 'cyan', 'magenta',
         'lime', 'navy', 'maroon', 'teal', 'olive', 'coral',
         'lavender', 'violet', 'gold', 'silver',
     ]
-    additional_colors = [colorname for (colorname, colorcode) in ImageColor.colormap.items()]
-    return basic_colors + additional_colors
+    
+    # カスタムカラーを優先的に使用
+    return custom_colors + basic_colors
 
 def parse_json(json_output):
     """マークダウンフェンシングからJSONを抽出する"""
@@ -48,6 +60,9 @@ def plot_bounding_boxes(img, bounding_boxes_text, font_path=None):
     
     # 色のリストを取得
     colors = get_color_list()
+    # モデル間の結果比較の際にも同じ識別子には同じ色を使用するため、シードを固定
+    random.seed(42)
+    random.shuffle(colors)
     
     # マークダウンフェンシングを解析
     json_text = parse_json(bounding_boxes_text)
