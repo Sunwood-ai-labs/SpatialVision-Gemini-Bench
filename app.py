@@ -9,7 +9,7 @@ from PIL import Image
 
 # 分割したモジュールのインポート
 from config import PAGE_CONFIG, get_api_key
-from models import get_genai_client, resize_image, detect_objects
+from models import get_genai_client, resize_image, detect_objects, detect_objects_with_multiple_models
 from data import ensure_images_directory, get_default_prompt, SAMPLE_PROMPTS
 from ui import (
     show_header, show_sidebar, show_sample_image_selector, 
@@ -29,7 +29,7 @@ def main():
     # サイドバー表示と設定取得
     settings = show_sidebar()
     api_key = settings["api_key"] or get_api_key()
-    model_option = settings["model_option"]
+    selected_models = settings["selected_models"]
     custom_prompt = settings["custom_prompt"]
     temperature = settings["temperature"]
     img_source = settings["img_source"]
@@ -66,27 +66,41 @@ def main():
                 st.error("API Keyを入力してください")
             else:
                 with st.spinner("Gemini APIでオブジェクト検出を実行中..."):
-
                     # クライアント取得
                     client = get_genai_client(api_key)
                     
                     # 画像をリサイズ
                     img_resized = resize_image(image)
                     
-                    # オブジェクト検出
-                    response = detect_objects(
-                        client, 
-                        model_option, 
-                        prompt, 
-                        img_resized, 
-                        temperature
-                    )
+                    # 選択されたモデルが複数の場合
+                    if len(selected_models) > 1:
+                        st.info(f"{len(selected_models)}個のモデルで順次処理を行います")
+                        
+                        # 複数モデルでのオブジェクト検出
+                        results = detect_objects_with_multiple_models(
+                            client,
+                            selected_models, 
+                            prompt,
+                            img_resized,
+                            temperature
+                        )
+                        
+                        # 複数モデルの結果を表示
+                        show_detection_results(results, img_resized)
                     
-                    # 結果の表示
-                    show_detection_results(response, img_resized)
-
-                    
-
+                    # 選択されたモデルが1つの場合
+                    else:
+                        model = selected_models[0]
+                        response = detect_objects(
+                            client, 
+                            model, 
+                            prompt, 
+                            img_resized, 
+                            temperature
+                        )
+                        
+                        # 単一モデルの結果も辞書形式で渡す
+                        show_detection_results({model: response}, img_resized)
     
     # フッター表示
     show_footer()
