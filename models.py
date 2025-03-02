@@ -4,10 +4,9 @@ APIクライアントの初期化、画像処理、推論処理などを管理
 """
 
 from PIL import Image
-import google.generativeai as genai
 from google.genai import Client
-from google.generativeai import types
 import streamlit as st
+from io import BytesIO
 
 from config import get_system_instruction, get_safety_settings, MAX_IMAGE_SIZE
 
@@ -44,14 +43,20 @@ def resize_image(image):
         image: PILのImageオブジェクト
         
     Returns:
-        リサイズされたImageオブジェクト
+        bytes: リサイズされた画像データ
     """
     img_resized = image.copy()
     if max(img_resized.size) > MAX_IMAGE_SIZE:
         ratio = MAX_IMAGE_SIZE / max(img_resized.size)
         new_size = (int(img_resized.size[0] * ratio), int(img_resized.size[1] * ratio))
         img_resized = img_resized.resize(new_size, Image.Resampling.LANCZOS)
-    return img_resized
+    
+    # 画像をバイト配列に変換
+    img_byte_arr = BytesIO()
+    img_resized.save(img_byte_arr, format='PNG')
+    img_byte_arr = img_byte_arr.getvalue()
+    
+    return img_byte_arr
 
 def detect_objects(client, model_name, prompt, image, temperature=0.5):
     """
@@ -74,11 +79,9 @@ def detect_objects(client, model_name, prompt, image, temperature=0.5):
     response = client.models.generate_content(
         model=model_name,
         contents=[prompt, img_resized],
-        config=types.GenerateContentConfig(
-            system_instruction=get_system_instruction(),
-            temperature=temperature,
-            safety_settings=get_safety_settings(),
-        )
+        temperature=temperature,
+        system_instruction=get_system_instruction(),
+        safety_settings=get_safety_settings()
     )
     
     return response
