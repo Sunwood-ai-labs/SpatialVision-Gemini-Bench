@@ -41,11 +41,15 @@ def resize_image(image):
     画像をAPIに適したサイズにリサイズ
     
     Args:
-        image: PILのImageオブジェクト
+        image: PILのImageオブジェクトまたはバイト配列
         
     Returns:
         bytes: リサイズされた画像データ
     """
+    # 既にバイト型の場合はそのまま返す
+    if isinstance(image, bytes):
+        return image
+        
     img_resized = image.copy()
     if max(img_resized.size) > MAX_IMAGE_SIZE:
         ratio = MAX_IMAGE_SIZE / max(img_resized.size)
@@ -67,19 +71,16 @@ def detect_objects(client, model_name, prompt, image, temperature=0.5):
         client: Gemini APIクライアント
         model_name: 使用するモデル名
         prompt: プロンプトテキスト
-        image: PILのImageオブジェクト
+        image: PILのImageオブジェクトまたはバイト配列
         temperature: 生成の多様性制御パラメータ
         
     Returns:
         APIレスポンス
     """
-    # 画像をリサイズ
-    img_resized = resize_image(image)
-    
     # バウンディングボックスを取得
     response = client.models.generate_content(
         model=model_name,
-        contents=[prompt, img_resized],
+        contents=[prompt, image],
         config=types.GenerateContentConfig(
             system_instruction=get_system_instruction(),
             temperature=temperature,

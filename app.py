@@ -66,13 +66,14 @@ def main():
                 st.error("API Keyを入力してください")
             else:
                 with st.spinner("Gemini APIでオブジェクト検出を実行中..."):
+
+                    # クライアント取得
+                    client = get_genai_client(api_key)
+                    
+                    # 画像をリサイズ
+                    img_resized = resize_image(image)
+                    
                     try:
-                        # クライアント取得
-                        client = get_genai_client(api_key)
-                        
-                        # 画像をリサイズ
-                        img_resized = resize_image(image)
-                        
                         # オブジェクト検出
                         response = detect_objects(
                             client, 
@@ -84,9 +85,10 @@ def main():
                         
                         # 結果の表示
                         show_detection_results(response, img_resized)
-                    
                     except Exception as e:
                         st.error(f"API呼び出し中にエラーが発生しました: {e}")
+                    
+
     
     # フッター表示
     show_footer()
