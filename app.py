@@ -17,11 +17,12 @@ from models import (
 from config import PAGE_CONFIG, get_api_key
 from data import ensure_images_directory, get_default_prompt
 
-# UI関連のモジュールをインポート
-from ui.components import (
-    show_header, show_sidebar, show_footer, show_image_uploader
-)
-from ui.components.image_selector import show_simple_sample_selector
+# UI関連のモジュールをインポート（個別のレイアウトファイルから直接インポート）
+from ui.layouts.header import show_header
+from ui.layouts.sidebar import show_sidebar
+from ui.layouts.footer import show_footer
+from ui.layouts.image_uploader import show_image_uploader
+from ui.layouts.image_selector import show_simple_sample_selector
 
 # マークダウンレポート生成関連のモジュールをインポート
 from ui.utils.file_utils import (

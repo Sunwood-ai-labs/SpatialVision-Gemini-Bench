@@ -7,10 +7,11 @@ StreamlitのUIコンポーネントを管理する
 from ui.layouts.header import show_header
 from ui.layouts.sidebar import show_sidebar
 from ui.layouts.footer import show_footer
+from ui.layouts.image_uploader import show_image_uploader
+from ui.layouts.image_selector import show_simple_sample_selector
 
-# コンポーネント
+# 旧コンポーネント（後方互換性のため）
 from ui.components.image_selector import show_sample_image_selector
-from ui.components.image_uploader import show_image_uploader
 
 # レポート
 from ui.reports.detection_results import show_detection_results, generate_markdown_report, save_markdown_report
@@ -29,8 +30,9 @@ __all__ = [
     'show_header',
     'show_sidebar',
     'show_footer',
-    'show_sample_image_selector',
     'show_image_uploader',
+    'show_simple_sample_selector',
+    'show_sample_image_selector',
     'show_detection_results',
     'generate_markdown_report',
     'save_markdown_report',
