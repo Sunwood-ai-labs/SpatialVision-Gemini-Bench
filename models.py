@@ -44,11 +44,11 @@ def resize_image(image):
         image: PILのImageオブジェクトまたはバイト配列
         
     Returns:
-        bytes: リサイズされた画像データ
+        PIL.Image: リサイズされた画像オブジェクト
     """
-    # 既にバイト型の場合はそのまま返す
+    # バイト型の場合はPIL.Imageに変換
     if isinstance(image, bytes):
-        return image
+        image = Image.open(BytesIO(image))
         
     img_resized = image.copy()
     if max(img_resized.size) > MAX_IMAGE_SIZE:
@@ -56,12 +56,7 @@ def resize_image(image):
         new_size = (int(img_resized.size[0] * ratio), int(img_resized.size[1] * ratio))
         img_resized = img_resized.resize(new_size, Image.Resampling.LANCZOS)
     
-    # 画像をバイト配列に変換
-    img_byte_arr = BytesIO()
-    img_resized.save(img_byte_arr, format='PNG')
-    img_byte_arr = img_byte_arr.getvalue()
-    
-    return img_byte_arr
+    return img_resized
 
 def detect_objects(client, model_name, prompt, image, temperature=0.5):
     """
