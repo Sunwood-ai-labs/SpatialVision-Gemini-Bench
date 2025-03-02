@@ -39,17 +39,16 @@ def generate_object_detection_report(response_dict, img=None, img_path=None, inc
     
     # 画像を埋め込む
     if img:
-        # 画像をBase64エンコード
-        img_base64 = get_image_as_base64(img)
-        md += "## 元画像\n\n"
-        md += f"![元画像](data:image/png;base64,{img_base64})\n\n"
-        
         # 画像をローカルに保存
         reports_dir = create_reports_directory()
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         img_filename = f"original_image_{timestamp}.png"
         img_path = os.path.join(reports_dir, img_filename)
         save_image(img, img_path)
+        
+        # 相対パスを使用したマークダウンリンク
+        md += "## 元画像\n\n"
+        md += f"![元画像]({img_path})\n\n"
         md += f"*画像を保存しました: `{img_path}`*\n\n"
     
     # サマリーセクション
@@ -157,17 +156,16 @@ def generate_comparison_report(results_dict1, results_dict2, img=None, img_path=
     
     # 画像を埋め込む
     if img:
-        # 画像をBase64エンコード
-        img_base64 = get_image_as_base64(img)
-        md += "## 元画像\n\n"
-        md += f"![元画像](data:image/png;base64,{img_base64})\n\n"
-        
         # 画像をローカルに保存
         reports_dir = create_reports_directory()
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         img_filename = f"comparison_image_{timestamp}.png"
         img_path = os.path.join(reports_dir, img_filename)
         save_image(img, img_path)
+        
+        # 相対パスを使用したマークダウンリンク
+        md += "## 元画像\n\n"
+        md += f"![元画像]({img_path})\n\n"
         md += f"*画像を保存しました: `{img_path}`*\n\n"
     
     # 結果1のサマリー
