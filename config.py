@@ -4,8 +4,8 @@
 """
 
 import os
+import streamlit as st
 from dotenv import load_dotenv
-from google.generativeai import types
 
 # .envファイルから環境変数を読み込む
 load_dotenv()
@@ -38,7 +38,7 @@ def get_api_key():
     Returns:
         str: Google API Key
     """
-    return os.getenv("GOOGLE_API_KEY")
+    return os.getenv("GOOGLE_API_KEY", "")
 
 # バウンディングボックスのシステムインストラクション
 def get_system_instruction():
@@ -63,9 +63,7 @@ def get_safety_settings():
     Returns:
         list: 安全設定のリスト
     """
-    return [
-        types.SafetySetting(
-            category="HARM_CATEGORY_DANGEROUS_CONTENT",
-            threshold="BLOCK_ONLY_HIGH",
-        ),
-    ]
+    return [{
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_ONLY_HIGH",
+    }]
