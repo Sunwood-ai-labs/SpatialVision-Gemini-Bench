@@ -5,6 +5,7 @@ APIクライアントの初期化、画像処理、推論処理などを管理
 
 from PIL import Image
 from google.genai import Client
+from google.genai import types
 import streamlit as st
 from io import BytesIO
 
@@ -79,9 +80,11 @@ def detect_objects(client, model_name, prompt, image, temperature=0.5):
     response = client.models.generate_content(
         model=model_name,
         contents=[prompt, img_resized],
-        temperature=temperature,
-        system_instruction=get_system_instruction(),
-        safety_settings=get_safety_settings()
+        config=types.GenerateContentConfig(
+            system_instruction=get_system_instruction(),
+            temperature=temperature,
+            safety_settings=get_safety_settings(),
+        )
     )
     
     return response
