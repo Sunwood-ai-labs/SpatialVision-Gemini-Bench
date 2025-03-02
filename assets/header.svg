@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="200" viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景の角丸長方形 -->
+  <rect x="10" y="10" width="780" height="180" rx="20" ry="20" fill="url(#grad)" />
+  
+  <!-- グラデーション定義 -->
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7D4EBF" />
+      <stop offset="25%" stop-color="#52378C" />
+      <stop offset="50%" stop-color="#352559" />
+      <stop offset="75%" stop-color="#0F5C8C" />
+      <stop offset="100%" stop-color="#092B40" />
+    </linearGradient>
+    
+    <!-- テキストのアニメーション -->
+    <filter id="blur">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+    </filter>
+  </defs>
+  
+  <!-- メインタイトル -->
+  <text x="400" y="80" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="white" text-anchor="middle">
+    SpatialVision Gemini
+    <animate attributeName="opacity" values="0.8;1;0.8" dur="3s" repeatCount="indefinite" />
+  </text>
+  
+  <!-- サブタイトル -->
+  <text x="400" y="120" font-family="Arial, sans-serif" font-size="20" fill="rgba(255,255,255,0.9)" text-anchor="middle">
+    Advanced Object Detection with Gemini API
+    <animate attributeName="y" values="120;125;120" dur="5s" repeatCount="indefinite" />
+  </text>
+  
+  <!-- 装飾図形：円 -->
+  <circle cx="120" cy="50" r="15" fill="white" opacity="0.2">
+    <animate attributeName="opacity" values="0.2;0.5;0.2" dur="4s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- 装飾図形：大きな円 -->
+  <circle cx="700" cy="150" r="30" fill="white" opacity="0.1">
+    <animate attributeName="r" values="30;35;30" dur="6s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- 装飾図形：小さな円 -->
+  <circle cx="650" cy="40" r="8" fill="white" opacity="0.3">
+    <animate attributeName="cx" values="650;660;650" dur="7s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- 装飾線 -->
+  <line x1="50" y1="150" x2="200" y2="150" stroke="white" stroke-width="2" opacity="0.3">
+    <animate attributeName="x2" values="200;220;200" dur="5s" repeatCount="indefinite" />
+  </line>
+</svg>
